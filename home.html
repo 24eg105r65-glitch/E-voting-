@@ -1,0 +1,952 @@
+<!doctype html>
+<!-- Cache Bust: 1765600987 -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Anurag Voting — Preview</title>
+  <style>
+    :root {
+        /* DARK THEME (Default) */
+        --bg-body: #0b0b0b;
+        --bg-gradient: linear-gradient(180deg,#0b0b0b 0%, #121212 100%);
+        --bg-panel: #161617;
+        --bg-card: #111;
+        --bg-input: #0f0f10;
+        --text-main: #fff;
+        --text-muted: #9a9a9a;
+        --border: rgba(255,255,255,0.06);
+        --accent: #ff9a2c;
+        --shadow: rgba(0,0,0,0.6);
+    }
+    
+    /* LIGHT THEME */
+    body.light-theme {
+        --bg-body: #f5f5f7;
+        --bg-gradient: linear-gradient(180deg,#f5f5f7 0%, #e1e1e1 100%);
+        --bg-panel: #ffffff;
+        --bg-card: #ffffff;
+        --bg-input: #f2f2f5;
+        --text-main: #1d1d1f;
+        --text-muted: #86868b;
+        --border: rgba(0,0,0,0.1);
+        --shadow: rgba(0,0,0,0.05);
+        /* Keep accent same or adjust if needed */
+    }
+
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg-gradient);color:var(--text-main); transition: background 0.3s, color 0.3s;}
+    .navbar{display:flex;justify-content:space-between;align-items:center;padding:18px 36px;background:transparent}
+    .logo{font-weight:700;color:var(--accent);display:flex;align-items:center;gap:10px}
+    .nav-actions{display:flex;gap:12px;align-items:center}
+    .btn{background:transparent;border:1px solid var(--border);padding:10px 16px;border-radius:8px;color:var(--text-main);text-decoration:none;cursor:pointer; transition: all 0.2s}
+    .btn:hover{background:var(--border)}
+    .btn.filled { background: var(--accent); color: white; border: none; }
+    .btn.filled:hover { opacity: 0.9; transform: translateY(-1px); background:var(--accent)}
+    
+    .password-wrapper { position: relative; width: 100%; }
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 1.2rem;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+        color: var(--text-main);
+    }
+    .password-toggle:hover { opacity: 1; }
+
+    /* Hero */
+    .container{max-width:1200px;margin:36px auto;padding:0 18px}
+    .hero{display:flex;gap:24px;align-items:center;padding:48px 0}
+    .hero-left{flex:1}
+    .tag{display:inline-block;background:var(--bg-panel);padding:6px 12px;border-radius:8px;color:var(--accent);font-size:13px; border:1px solid var(--border)}
+    h1{font-size:44px;margin:18px 0;line-height:1.05}
+    .hero p{color:var(--text-muted);max-width:520px}
+    .btn-group{margin-top:18px;display:flex;gap:12px}
+    .hero-right{width:460px}
+    .hero-card{background:var(--bg-card);padding:18px;border-radius:12px; border:1px solid var(--border); box-shadow: 0 4px 12px var(--shadow)}
+    .hero-card img{width:100%;border-radius:8px;display:block}
+
+    /* features */
+    .features{background:var(--bg-panel);padding:36px 24px;border-radius:8px;margin-top:20px; border:1px solid var(--border)}
+    .feature-grid{display:flex;gap:18px;justify-content:center;margin-top:18px}
+    .feature{background:var(--bg-card);padding:18px;border-radius:10px;width:220px; border:1px solid var(--border)}
+
+    .cta{background:linear-gradient(90deg,var(--accent),#ff7427);color:#fff;padding:36px;border-radius:12px;margin:36px 0;text-align:center}
+
+    /* auth */
+    .center-screen{min-height:68vh;display:flex;align-items:center;justify-content:center}
+    .card{background:var(--bg-card);padding:32px;border-radius:12px;width:100%;box-shadow:0 6px 18px var(--shadow); border:1px solid var(--border)}
+    .card h2{margin:6px 0 6px}
+    .card p{color:var(--text-muted);margin-top:0}
+    .input{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-main);margin-top:12px; outline:none}
+    .input:focus{border-color:var(--accent)}
+    .muted{color:var(--text-muted);font-size:14px;text-align:center;margin-top:12px}
+
+    /* utility */
+    .hidden{display:none}
+    a {color:var(--accent);text-decoration:none}
+    footer{height:60px; color:var(--text-muted); text-align:center}
+    
+    /* Admin Layout Overrides */
+    .admin-wrapper {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 36px;
+        padding: 24px 48px;
+        min-height: calc(100vh - 80px);
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    .admin-sidebar { display: flex; flex-direction: column; gap: 24px; }
+    .admin-main { display: flex; flex-direction: column; gap: 24px; }
+    
+    @media (max-width: 1024px) {
+        .admin-wrapper { grid-template-columns: 1fr; padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">🗳️ <strong>Anurag Voting X cloudoloG</strong></div>
+    <div class="nav-actions">
+      <button id="theme-toggle-btn" class="btn" onclick="toggleTheme()" title="Toggle Theme" style="padding:8px 12px; font-size:1.2rem">☀️</button>
+      <div id="auth-buttons" style="display:flex; gap:12px;">
+        <button class="btn" onclick="showPage('auth')">Sign In</button>
+        <button class="btn filled" onclick="showPage('signup')">Get Started</button>
+      </div>
+    </div>
+  </div>
+
+  <main id="app">
+    <!-- HOME -->
+    <section id="home" class="container">
+      <div class="hero">
+        <div class="hero-left">
+          <div class="tag">University E-Voting Platform</div>
+          <h1>Your Voice, <span style="color:var(--accent)">Your Vote,</span><br>Your Future</h1>
+          <p>A secure, transparent, and easy-to-use voting system for university elections. Make your voice heard in shaping your campus community.</p>
+
+          <div class="btn-group">
+            <button class="btn filled" onclick="showPage('signup')">Get Started</button>
+            <button class="btn" onclick="showPage('auth')">Sign In</button>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="hero-card">
+            <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=2b0b4b4c3d2f6f2d1e4a8c4b7f9b6c9d" alt="hero">
+          </div>
+        </div>
+      </div>
+
+      <div class="features">
+        <h3 style="text-align:center">Why Choose Anurag Voting?</h3>
+        <div class="feature-grid">
+          <div class="feature"><strong>🔒 Secure & Encrypted</strong><div style="color:var(--muted);margin-top:8px">Your vote is protected with end-to-end encryption.</div></div>
+          <div class="feature"><strong>⚡ Fast & Easy</strong><div style="color:var(--muted);margin-top:8px">Cast your vote in seconds with our clean UI.</div></div>
+          <div class="feature"><strong>🧑‍💼 Role-Based Access</strong><div style="color:var(--muted);margin-top:8px">Admins, students, and staff get tailored dashboards.</div></div>
+          <div class="feature"><strong>📊 Live Results</strong><div style="color:var(--muted);margin-top:8px">Results appear in real time with analytics.</div></div>
+        </div>
+      </div>
+
+      <div class="cta">
+        <h3>Ready to Make Your Voice Heard?</h3>
+        <p>Join thousands of students who are already participating in secure, transparent university elections.</p>
+        <button class="btn filled large" onclick="showPage('signup')" style="padding:12px 28px;margin-top:12px">Register Now →</button>
+      </div>
+    </section>
+
+    <!-- LOGIN -->
+    <section id="auth" class="center-screen hidden container">
+      <div class="card">
+        <h2>Welcome Back</h2>
+        <p>Sign in to access your voting dashboard</p>
+        <form onsubmit="handleLogin(event)">
+          <input id="login-email" class="input" type="email" placeholder="your.email@anurag.edu.in" required>
+          <div class="password-wrapper">
+              <input id="login-password" class="input" type="password" placeholder="Password" required style="width:100%">
+              <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)" title="Show Password">👁️</button>
+          </div>
+          <button type="submit" class="btn filled" style="width:100%;margin-top:16px">Sign In</button>
+        </form>
+        <div class="muted">Don't have an account? <a href="#" onclick="showPage('signup');return false">Sign up</a></div>
+      </div>
+    </section>
+
+    <!-- SIGNUP -->
+    <section id="signup" class="center-screen hidden container">
+      <div class="card">
+        <h2>Create Account</h2>
+        <p>Register with your College ID to start voting</p>
+        <form onsubmit="handleSignup(event)">
+          <input id="signup-name" class="input" type="text" placeholder="Full Name" required>
+          <input id="signup-id" class="input" type="text" placeholder="College ID" required>
+          <input id="signup-email" class="input" type="email" placeholder="your.email@anurag.edu.in" required>
+          <div class="password-wrapper" style="margin-bottom:12px">
+              <input id="signup-password" class="input" type="password" placeholder="Password" required style="width:100%; margin-bottom:0">
+              <button type="button" class="password-toggle" onclick="togglePassword('signup-password', this)" title="Show Password">👁️</button>
+          </div>
+          <div class="password-wrapper">
+              <input id="signup-confirm-password" class="input" type="password" placeholder="Confirm Password" required style="width:100%">
+              <button type="button" class="password-toggle" onclick="togglePassword('signup-confirm-password', this)" title="Show Password">👁️</button>
+          </div>
+          <button type="submit" class="btn filled" style="width:100%;margin-top:16px">Create Account</button>
+        </form>
+        <div class="muted">Already have an account? <a href="#" onclick="showPage('auth');return false">Sign in</a></div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="hidden container">
+        <div style="margin: 36px 0; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h2 style="margin:0">Voting Dashboard</h2>
+                <p style="color:var(--muted);margin:8px 0 0">Welcome, <span id="user-name-display">Student</span></p>
+            </div>
+            <button class="btn" onclick="logout()">Sign Out</button>
+        </div>
+
+        <div id="voting-area">
+             <!-- Candidates injected here -->
+        </div>
+    </section>
+
+    <!-- ADMIN DASHBOARD -->
+    <!-- ADMIN DASHBOARD -->
+    <section id="admin-dashboard" class="hidden">
+        <div style="background:var(--panel); padding: 24px 48px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center;">
+             <h2 style="margin:0; font-size: 1.5rem;">Admin Control Center</h2>
+             <button class="btn" onclick="logout()">Sign Out</button>
+        </div>
+
+        <div class="admin-wrapper">
+            <!-- LEFT SIDEBAR -->
+            <div class="admin-sidebar">
+                <!-- ELECTION CONTROLS -->
+                <div class="card" style="border-left: 4px solid var(--accent);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h3 style="margin:0">Status</h3>
+                            <span id="admin-election-status" style="font-weight:bold; color:white; font-size:1.2rem; display:block; margin-top:4px">Loading...</span>
+                        </div>
+                        <div style="font-size:2rem">🚦</div>
+                    </div>
+                    <div id="admin-controls" style="margin-top:20px; display:flex; gap:10px; flex-direction:column">
+                        <!-- Buttons injected here -->
+                    </div>
+                    <p style="margin:12px 0 0; color:var(--muted); font-size:0.85rem">
+                        Master switch for election visibility.
+                    </p>
+                </div>
+
+                <!-- NOTICE BOARD -->
+                <div class="card">
+                    <h3>📢 Notice Board</h3>
+                    <p style="color:var(--muted); margin-top:0; font-size:0.9rem">Message for "Not Started" screen.</p>
+                    <textarea id="admin-notice-input" class="input" rows="4" placeholder="e.g. 'Voting begins at 10:00 AM...'" style="resize:vertical; font-family:inherit;"></textarea>
+                    <button class="btn filled" style="margin-top:12px; width:100%" onclick="updateElectionNotice()">Update Notice</button>
+                </div>
+
+                <!-- LIVE STATS -->
+                <div class="card">
+                     <h3>📊 Live Stats</h3>
+                     <div style="font-size:3rem; font-weight:bold; color:var(--accent)" id="admin-total-votes">0</div>
+                     <p style="color:var(--muted); margin:0; font-size:0.9rem">Total Votes Cast</p>
+                </div>
+            </div>
+
+            <!-- RIGHT MAIN CONTENT -->
+            <div class="admin-main">
+                <div class="card">
+                    <h3 style="margin-top:0">Add Candidate</h3>
+                    <form onsubmit="addCandidate(event)" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                        <input id="admin-name" class="input" type="text" placeholder="Candidate Name" required style="margin-top:0">
+                        <input id="admin-position" class="input" type="text" placeholder="Position" required style="margin-top:0">
+                        <input id="admin-motto" class="input" type="text" placeholder="Motto" required style="grid-column: span 2; margin-top:0">
+                        <input id="admin-img" class="input" type="url" placeholder="Image URL (optional)" style="grid-column: span 2; margin-top:0">
+                        <button type="submit" class="btn filled" style="grid-column: span 2; padding: 14px">Add Candidate</button>
+                    </form>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom:16px">Manage Candidates</h3>
+                    <div id="admin-candidates-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:16px;">
+                        <!-- Admin Candidate List -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  </main>
+
+  <footer style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
+    <div>&copy; 2024 Anurag Voting System</div>
+    <div style="font-size:0.75rem; opacity:0.5; margin-top:4px">v1.1 - Light Mode Enabled</div>
+  </footer>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, runTransaction, setDoc, getDoc, onSnapshot, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // TODO: Replace the following with your app's Firebase project configuration
+    // See: https://firebase.google.com/docs/web/setup#config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDF7MT-dbamuYZLgWEWV5mpQyZBgEIZ8rY",
+      authDomain: "anuragvoting.firebaseapp.com",
+      projectId: "anuragvoting",
+      storageBucket: "anuragvoting.firebasestorage.app",
+      messagingSenderId: "96781271528",
+      appId: "1:96781271528:web:a5060ea3a6c7de1950e45d",
+      measurementId: "G-HT96BVCXTX"
+    };
+
+    // Initialize Firebase
+    let db;
+    try {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        console.log("Firebase initialized");
+    } catch (e) {
+        console.error("Firebase init error (Did you set up the config?):", e);
+        alert("Firebase Configuration Missing! Please edit the code to add your Firebase Config.");
+    }
+
+    const SESSION_KEY = 'anurag_voting_session_fb';
+
+    // --- UTILS ---
+    function getSession() {
+        return JSON.parse(localStorage.getItem(SESSION_KEY));
+    }
+
+    function setSession(user) {
+        // We only store minimal info in session. State of 'hasVoted' is one-time loaded or refreshed from DB.
+        localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    }
+    
+    window.togglePassword = function(inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            btn.innerText = "🔒"; // Lock icon to imply 'hide/secure'
+            btn.title = "Hide Password";
+        } else {
+            input.type = "password";
+            btn.innerText = "👁️";
+            btn.title = "Show Password";
+        }
+    }
+
+    // --- NAVIGATION ---
+    window.showPage = function(page){
+      document.querySelectorAll('#app > section').forEach(s=>s.classList.add('hidden'));
+      const el = document.getElementById(page);
+      if(el) el.classList.remove('hidden');
+      window.scrollTo({top:0,behavior:'smooth'});
+      
+      const authButtons = document.getElementById('auth-buttons');
+      const session = getSession();
+      
+      if (session) {
+          authButtons.innerHTML = `<span style="margin-right:12px;color:var(--muted)">Hello, ${session.name}</span>`;
+      } else {
+          authButtons.innerHTML = `
+            <button class="btn" onclick="showPage('auth')">Sign In</button>
+            <button class="btn filled" onclick="showPage('signup')">Get Started</button>
+          `;
+      }
+
+      if (page === 'dashboard') {
+           if (!session) {
+               showPage('auth');
+               return;
+           }
+           renderDashboard();
+      } else if (page === 'admin-dashboard') {
+           // Basic security check (client-side only, real security via Rules)
+           if (!session || session.email !== 'admin@anurag.edu.in') {
+               alert('Unauthorized');
+               showPage('auth');
+               return;
+           }
+           renderAdminDashboard();
+      }
+    }
+
+    // --- AUTH ---
+    window.handleSignup = async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('signup-name').value;
+        const id = document.getElementById('signup-id').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const confirm = document.getElementById('signup-confirm-password').value;
+
+        if (!email.endsWith('@anurag.edu.in')) {
+            alert('Error: Email must be a valid @anurag.edu.in address.');
+            return;
+        }
+
+        if (password !== confirm) {
+            alert('Error: Passwords do not match.');
+            return;
+        }
+
+        try {
+            // Check if user exists
+            const q = query(collection(db, "users"), where("email", "==", email));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                alert('User already exists!');
+                return;
+            }
+
+            // Create User Document
+            await addDoc(collection(db, "users"), {
+                name: name,
+                collegeId: id,
+                email: email,
+                password: password, // In production, never store plaintext passwords!
+                hasVoted: false
+            });
+
+            alert('Account created! Please sign in.');
+            showPage('auth');
+
+        } catch (err) {
+            console.error(err);
+            alert('Signup Failed: ' + err.message);
+        }
+    }
+
+    window.handleLogin = async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        // ADMIN LOGIN CHECK
+        if (email === 'admin@anurag.edu.in' && password === 'nrp#26265') {
+            const adminUser = { name: 'Admin', email: email, role: 'admin' };
+            setSession(adminUser);
+            showPage('admin-dashboard');
+            return;
+        }
+
+        try {
+            const q = query(collection(db, "users"), where("email", "==", email), where("password", "==", password));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                alert('Invalid Email or Password');
+                return;
+            }
+
+            const userDoc = querySnapshot.docs[0];
+            const userData = userDoc.data();
+            userData.firestoreId = userDoc.id; // Store Doc ID for updates
+
+            setSession(userData);
+            showPage('dashboard');
+
+        } catch (err) {
+            console.error(err);
+            alert('Login Failed: ' + err.message);
+        }
+    }
+
+    window.logout = function() {
+        localStorage.removeItem(SESSION_KEY);
+        // Clear snapshots if any (optional but good practice)
+        showPage('auth'); // Redirect to auth/home instead of just 'home' which might be blank
+    }
+
+    // --- ADMIN ---
+    window.addCandidate = async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('admin-name').value;
+        const position = document.getElementById('admin-position').value;
+        const motto = document.getElementById('admin-motto').value;
+        const img = document.getElementById('admin-img').value;
+
+        try {
+            await addDoc(collection(db, "candidates"), {
+                name, position, motto, img: img || "", voteCount: 0
+            });
+            alert('Candidate Added!');
+            e.target.reset(); // Clear form
+        } catch (err) {
+            console.error(err);
+            alert('Error adding candidate: ' + err.message);
+        }
+    }
+
+    window.deleteCandidate = async function(id) {
+        if(!confirm('Are you sure you want to delete this candidate?')) return;
+        try {
+            await deleteDoc(doc(db, "candidates", id));
+            // UI updates automatically via onSnapshot
+        } catch (err) {
+            console.error(err);
+            alert('Error deleting: ' + err.message);
+        }
+    }
+
+    window.updateElectionStatus = async function(status) {
+        if(!confirm(`Are you sure you want to set election status to: ${status}?`)) return;
+        try {
+            await setDoc(doc(db, "settings", "config"), { status: status }, { merge: true });
+        } catch(e) {
+            alert("Error updating status: " + e.message);
+        }
+    }
+
+    window.updateElectionNotice = async function() {
+        const msg = document.getElementById('admin-notice-input').value;
+        try {
+             await setDoc(doc(db, "settings", "config"), { noticeMessage: msg }, { merge: true });
+             alert("Notice Updated!");
+        } catch(e) {
+            alert("Error updating notice: " + e.message);
+        }
+    }
+
+    window.startNewElection = async function() {
+        if(!confirm("WARNING: This will RESET ALL VOTES to zero and allow everyone to vote again. Proceed?")) return;
+        
+        try {
+            const batch = writeBatch(db);
+            
+            // 1. Reset Candidates (Vote Count -> 0)
+            const candidatesSnap = await getDocs(collection(db, "candidates"));
+            candidatesSnap.forEach(doc => {
+                batch.update(doc.ref, { voteCount: 0 });
+            });
+
+            // 2. Reset Users (hasVoted -> false)
+            // Query only users who have voted to save operations
+            const usersQ = query(collection(db, "users"), where("hasVoted", "==", true));
+            const usersSnap = await getDocs(usersQ);
+            usersSnap.forEach(doc => {
+                 batch.update(doc.ref, { hasVoted: false });
+            });
+
+            // 3. Set Status to Active & Save Title
+            const configRef = doc(db, "settings", "config");
+            const title = prompt("Enter Election Title (e.g., 'Student Council 2024'):", "University Election");
+            
+            if (title === null) return; // Cancelled
+            
+            batch.set(configRef, { status: 'active', electionTitle: title }, { merge: true });
+
+            await batch.commit();
+            alert("New Election Started! All votes have been reset.");
+
+        } catch(e) {
+            console.error(e);
+            alert("Error starting election: " + e.message);
+        }
+    }
+
+    function renderAdminDashboard() {
+         const list = document.getElementById('admin-candidates-list');
+         const statusSpan = document.getElementById('admin-election-status');
+         const controlsDiv = document.getElementById('admin-controls');
+         
+         // 1. Listen to Election Status & Notice
+         onSnapshot(doc(db, "settings", "config"), (docSnapshot) => {
+             const data = docSnapshot.exists() ? docSnapshot.data() : {};
+             const status = data.status || 'not_started';
+             const notice = data.noticeMessage || '';
+             
+             // Update Notice Textarea
+             const noticeInput = document.getElementById('admin-notice-input');
+             if(noticeInput && document.activeElement !== noticeInput) {
+                 noticeInput.value = notice;
+             }
+             
+             let color = 'white';
+             let buttons = '';
+             
+             if(status === 'not_started') {
+                 color = 'orange';
+                 statusSpan.innerText = "NOT STARTED";
+                 buttons = `<button class="btn filled" onclick="startNewElection()">Start New Election (Reset Votes)</button>`;
+             } else if (status === 'active') {
+                 color = '#4CAF50'; // Green
+                 statusSpan.innerText = "ACTIVE (VOTING OPEN)";
+                 buttons = `<button class="btn" style="border:1px solid red; color:red" onclick="updateElectionStatus('ended')">End Election</button>`;
+             } else if (status === 'ended') {
+                 color = 'red';
+                 statusSpan.innerText = "ENDED (RESULTS PUBLIC)";
+                 buttons = `<button class="btn" style="color:orange; border:1px solid orange" onclick="updateElectionStatus('not_started')">Reset / Re-open</button>`;
+             }
+             
+             statusSpan.style.color = color;
+             controlsDiv.innerHTML = buttons;
+         });
+
+         // 2. Listen to Candidates
+         list.innerHTML = '<p>Loading...</p>';
+         onSnapshot(collection(db, "candidates"), (snap) => {
+             list.innerHTML = '';
+             let totalVotes = 0;
+
+             if (snap.empty) {
+                 list.innerHTML = '<p>No candidates found. Add one above.</p>';
+                 // Reset total if no candidates
+                 const totalDisplay = document.getElementById('admin-total-votes');
+                 if(totalDisplay) totalDisplay.innerText = '0';
+                 return;
+             }
+             snap.forEach(doc => {
+                 const d = doc.data();
+                 totalVotes += (d.voteCount || 0);
+
+                 const div = document.createElement('div');
+                 div.className = 'card';
+                 div.style.display = 'flex';
+                 div.style.justifyContent = 'space-between';
+                 div.style.alignItems = 'center';
+                 div.style.padding = '12px';
+                 
+                 div.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:12px">
+                        <img src="${d.img || 'https://ui-avatars.com/api/?name='+d.name}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">
+                        <div>
+                            <div style="font-weight:bold">${d.name}</div>
+                            <div style="font-size:0.8rem;color:var(--muted)">${d.position}</div>
+                        </div>
+                    </div>
+                    <button class="btn" style="border:1px solid red; color:red" onclick="deleteCandidate('${doc.id}')">Delete</button>
+                 `;
+                 list.appendChild(div);
+             });
+             
+             // Update Total Votes Display
+             const totalDisplay = document.getElementById('admin-total-votes');
+             if(totalDisplay) {
+                 totalDisplay.innerText = totalVotes;
+             }
+         });
+    }
+
+    // --- VOTING ---
+    async function renderDashboard() {
+        const session = getSession();
+        const container = document.getElementById('voting-area');
+        const dashboardTitle = document.querySelector('#dashboard h2');
+        
+        document.getElementById('user-name-display').innerText = session.name;
+        
+        container.innerHTML = '<p style="text-align:center;color:var(--muted)">Loading election data...</p>';
+
+        try {
+            // CHECK ELECTION STATUS FIRST
+            onSnapshot(doc(db, "settings", "config"), async (settingsSnap) => {
+                const data = settingsSnap.exists() ? settingsSnap.data() : {};
+                const status = data.status || 'not_started';
+                const noticeMsg = data.noticeMessage || "Voting has not begun yet. Please wait for the administrator to open the polls.";
+                
+                // Update Dynamic Title
+                if(dashboardTitle && data.electionTitle) {
+                    dashboardTitle.innerText = data.electionTitle;
+                }
+
+                if (status === 'not_started') {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:3rem 1rem;">
+                            <h2 style="color:var(--accent)">Election Not Started</h2>
+                            <p style="white-space: pre-wrap;">${noticeMsg}</p>
+                            <div style="margin-top:20px; font-size:2rem">⏳</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // If ENDED, show results to EVERYONE
+                if (status === 'ended') {
+                    renderLiveResults(container, true);
+                    return;
+                }
+
+                // If ACTIVE, proceed to check if user has voted
+                // Re-fetch user status to be sure
+                const userRef = doc(db, "users", session.firestoreId);
+                const userSnap = await getDoc(userRef);
+                
+                if (userSnap.exists() && userSnap.data().hasVoted) {
+                     // HIDE RESULTS IF ACTIVE
+                     container.innerHTML = `
+                        <div style="text-align:center; padding:3rem 1rem;">
+                            <h2 style="color:var(--accent)">Vote Submitted!</h2>
+                            <p>Thank you for voting. The results will be displayed here once the election ends.</p>
+                            <div style="margin-top:20px; font-size:3rem">🗳️</div>
+                        </div>
+                     `;
+                } else {
+                    renderVotingList(container); // Show voting options
+                }
+            });
+
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = '<p style="color:red;text-align:center">Error loading dashboard. Please try refreshing.</p>';
+        }
+    }
+    
+    function renderLiveResults(container, forceAll) {
+         // CANDIDATES SNAPSHOT (Real-time)
+         const candidatesRef = collection(db, "candidates");
+         onSnapshot(candidatesRef, (candidatesSnap) => {
+             let totalVotes = 0;
+             let resultsData = [];
+             
+             candidatesSnap.forEach(doc => {
+                 const data = doc.data();
+                 const count = Number(data.voteCount || 0);
+                 totalVotes += count;
+                 resultsData.push({ id: doc.id, ...data, count });
+             });
+             
+             // Sort by votes descending
+             resultsData.sort((a, b) => b.count - a.count);
+
+             const top3 = resultsData.slice(0, 3);
+             const others = resultsData.slice(3);
+
+             const getImg = (c) => {
+                 return c.img && c.img.length > 5 ? c.img : `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=random&color=fff`;
+             }
+             
+             const statusTitle = forceAll ? "ELECTION ENDED - FINAL RESULTS" : "LIVE POLLING";
+             const statusSubtitle = forceAll ? "● Final Results" : "● Live Updates Active";
+
+             let resultsHTML = `
+                <style>
+                    .podium-container {
+                        display: flex;
+                        justify-content: center;
+                        align-items: flex-end;
+                        gap: 16px;
+                        margin-bottom: 40px;
+                        margin-top: 20px;
+                        height: 350px;
+                    }
+                    .podium-place {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: flex-end;
+                        text-align: center;
+                        width: 100px;
+                    }
+                    .podium-bar {
+                        width: 100%;
+                        border-radius: 8px 8px 0 0;
+                        display: flex;
+                        align-items: flex-end;
+                        justify-content: center;
+                        padding-bottom: 10px;
+                        font-weight: bold;
+                        color: #111;
+                        transition: height 1s ease-out;
+                        position: relative;
+                    }
+                    .podium-bar.gold { background: linear-gradient(to bottom, #FFD700, #DAA520); height: 200px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+                    .podium-bar.silver { background: linear-gradient(to bottom, #C0C0C0, #A9A9A9); height: 140px; }
+                    .podium-bar.bronze { background: linear-gradient(to bottom, #CD7F32, #A0522D); height: 100px; }
+                    
+                    .winner-img {
+                        width: 70px; height: 70px; border-radius: 50%; object-fit: cover;
+                        border: 3px solid #fff; margin-bottom: 10px;
+                    }
+                    .winner-name { font-weight: bold; margin-bottom: 4px; font-size: 0.9rem; }
+                    
+                    /* Reorder for visual podium: 2nd, 1st, 3rd */
+                    .order-1 { order: 2; transform: scale(1.1); z-index: 2; } /* Winner */
+                    .order-2 { order: 1; } /* 2nd */
+                    .order-3 { order: 3; } /* 3rd */
+                </style>
+
+                <div style="max-width:800px; margin:0 auto; width:100%;">
+                    <div class="cta" style="margin-top:0; margin-bottom: 2rem;">
+                        <h3>${statusTitle}</h3>
+                        <p style="margin-bottom:0; color:black; font-weight:bold;">${statusSubtitle}</p>
+                    </div>
+                    
+                    <div class="podium-container">
+             `;
+
+             top3.forEach((c, index) => {
+                 const rank = index + 1;
+                 let barClass = rank === 1 ? 'gold' : (rank === 2 ? 'silver' : 'bronze');
+                 let orderClass = `order-${rank}`;
+                 // If totalVotes is 0, avoid NaN
+                 let percentage = totalVotes > 0 ? ((c.count / totalVotes) * 100).toFixed(1) : 0;
+                 
+                 resultsHTML += `
+                    <div class="podium-place ${orderClass}">
+                        <img src="${getImg(c)}" class="winner-img" style="border-color: var(--bg)">
+                        <div class="winner-name">${c.name}</div>
+                        <div style="font-size:0.8rem; opacity:0.7; margin-bottom:8px">${percentage}%</div>
+                        <div class="podium-bar ${barClass}">
+                            <span style="font-size:1.5rem">${rank}</span>
+                        </div>
+                    </div>
+                 `;
+             });
+
+             resultsHTML += `</div> <h3 style="text-align:center; border-top:1px solid #333; padding-top:20px; margin-top:0">Full Standings</h3>`;
+
+             const allToList = [...top3, ...others];
+             
+             allToList.forEach((c, index) => {
+                 const percentage = totalVotes > 0 ? ((c.count / totalVotes) * 100).toFixed(1) : 0;
+                 const imgUrl = getImg(c);
+                 const rank = index + 1;
+
+                 resultsHTML += `
+                    <div style="margin-bottom: 1rem; background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:space-between">
+                        <div style="display:flex; align-items:center; gap:12px">
+                            <div style="width:24px; text-align:center; font-weight:bold; color:var(--muted)">#${rank}</div>
+                            <img src="${imgUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border: 1px solid var(--accent);">
+                            <div>
+                                <div style="font-weight:bold; font-size:1rem">${c.name}</div>
+                            </div>
+                        </div>
+                        <div style="font-weight:bold; color:var(--accent);">${percentage}%</div>
+                    </div>
+                `;
+             });
+             
+             resultsHTML += '</div>';
+             container.innerHTML = resultsHTML;
+         });
+    }
+
+    function renderVotingList(container) {
+         const candidatesRef = collection(db, "candidates");
+         onSnapshot(candidatesRef, (candidatesSnap) => {
+             let html = '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">';
+             
+             if(candidatesSnap.empty){
+                 container.innerHTML = '<p style="text-align:center; padding: 2rem;">No candidates available yet. Please ask an admin to add candidates.</p>';
+                 return;
+             }
+
+             candidatesSnap.forEach(doc => {
+                 const c = doc.data();
+                 const id = doc.id; 
+                 const imgUrl = c.img && c.img.length > 5 ? c.img : `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=random&color=fff`;
+
+                 html += `
+                    <div class="card candidate-card" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+                        <img src="${imgUrl}" alt="${c.name}" class="candidate-img" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--accent); margin-bottom:12px">
+                        <div class="candidate-info" style="width:100%">
+                            <h3>${c.name}</h3>
+                            <p style="color:var(--accent); font-weight:bold; margin-bottom:8px">${c.position}</p>
+                            <p style="font-size:0.9rem; margin-bottom:16px; font-style:italic; min-height:40px">"${c.motto}"</p>
+                            <button class="btn filled" style="width:100%" onclick="castVote('${id}', '${c.name.replace("'","\\'")}')">Vote for ${c.name.split(' ')[0]}</button>
+                        </div>
+                    </div>
+                 `;
+             });
+             html += '</div>';
+             container.innerHTML = html;
+         });
+    }
+
+    window.castVote = async function(candidateId, candidateName) {
+        if (!confirm(`Confirm vote for ${candidateName}? This is anonymous and irreversible.`)) return;
+        
+        const session = getSession();
+        if (!session || !session.firestoreId) {
+            alert("Session invalid. Please login again.");
+            logout();
+            return;
+        }
+
+        try {
+            await runTransaction(db, async (transaction) => {
+                const userRef = doc(db, "users", session.firestoreId);
+                const userDoc = await transaction.get(userRef);
+                if (!userDoc.exists()) throw new Error("User document not found");
+                
+                const userData = userDoc.data();
+                if (userData.hasVoted) throw new Error("Your vote has already been cast");
+
+                const candidateRef = doc(db, "candidates", candidateId);
+                const candidateDoc = await transaction.get(candidateRef);
+
+                if (candidateDoc.exists()) {
+                    const newCount = (candidateDoc.data().voteCount || 0) + 1;
+                    transaction.update(candidateRef, { voteCount: newCount });
+                } else {
+                    transaction.set(candidateRef, { name: candidateName, voteCount: 1 });
+                }
+
+                transaction.update(userRef, { hasVoted: true });
+            });
+            
+            // Re-render handled by onSnapshot in renderDashboard
+            
+            // SHOW THANK YOU MESSAGE
+            const container = document.getElementById('voting-area');
+            container.innerHTML = `
+                <div style="text-align:center; padding: 4rem; animation: fadeIn 0.5s;">
+                    <div style="font-size: 5rem; margin-bottom: 20px;">🎉</div>
+                    <h2 style="color:var(--accent); font-size: 2rem;">Thanks for voting!</h2>
+                    <p style="font-size: 1.2rem;">Your vote has been securely recorded.</p>
+                    <p style="color:var(--muted); margin-top: 2rem;">Redirecting to Live Results...</p>
+                </div>
+            `;
+            
+            // Wait 3 seconds, then let renderDashboard take over (which will see hasVoted=true)
+            setTimeout(() => {
+                renderDashboard();
+            }, 3000);
+            
+        } catch (e) {
+            console.error("Transaction failed: ", e);
+            alert("Voting Failed: " + e.message);
+        }
+    }
+
+    // Initialize Router
+    showPage('home');
+
+
+    // --- THEME SUPPORT ---
+    window.toggleTheme = function() {
+        document.body.classList.toggle('light-theme');
+        const isLight = document.body.classList.contains('light-theme');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const isLight = document.body.classList.contains('light-theme');
+        const btn = document.getElementById('theme-toggle-btn');
+        if(btn) btn.innerText = isLight ? '🌙' : '☀️';
+    }
+
+    // Initialize Theme
+    (function initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if(savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+        }
+        updateThemeIcon();
+    })();
+
+  </script>
+</body>
+</html>
